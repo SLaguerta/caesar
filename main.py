@@ -15,10 +15,40 @@
 # limitations under the License.
 #
 import webapp2
+# from cgi import escape
+
+from caesar import encrypt
+
+form="""
+<form method= "post">
+    Encrypt!
+    <br>
+    <label> Rotate by:
+    <input type="text" name="rotate_value">
+    </label>
+
+    <br>
+    <label>Text to Encrypt
+    <textarea type="text" name="text">
+
+    </textarea>
+    </label>
+    <input type ="submit">
+</form>
+"""
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
-        self.response.write('Hello world!')
+        self.response.out.write(form)
+
+
+    def post(self):
+        rot = self.request.get("rotate_value")
+        rot =int(rot)
+        text = self.request.get("text")
+        answer = encrypt(text, rot)
+        self.response.out.write(answer)
+
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler)
