@@ -15,39 +15,67 @@
 # limitations under the License.
 #
 import webapp2
-# from cgi import escape
+import cgi
 
 from caesar import encrypt
+page_header = """
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Caesar Cipher</title>
+        <style>
+            form {
+                    background-color: #eee;
+                    padding: 20px;
+                    margin: 0 auto;
+                    width: 500px;
+                    font: 16px serif;
+            }
+            textarea {
+                    margin: 10px 0;
+                    width: 450px;
+                    height: 300px;
+            }
+
+        </style>
+    </head>
+<body>
+"""
 
 form="""
 <form method= "post">
-    Encrypt!
+    Encrypt
     <br>
-    <label> Rotate by:
-    <input type="text" name="rotate_value">
+    <div>
+    <label for="rotate_value"> Rotate by:
+    <input type="text" name="rotate_value" value="{}">
     </label>
-
+    </div>
     <br>
     <label>Text to Encrypt
-    <textarea type="text" name="text">
-
-    </textarea>
-    </label>
+    <textarea type="text" name="text">{}</textarea></label>
+    <br>
     <input type ="submit">
 </form>
 """
 
 class MainHandler(webapp2.RequestHandler):
-    def get(self):
-        self.response.out.write(form)
 
+
+    def get(self):
+        response = page_header + form.format(0, "")
+
+        self.response.out.write(response)
 
     def post(self):
         rot = self.request.get("rotate_value")
         rot =int(rot)
-        text = self.request.get("text")
-        answer = encrypt(text, rot)
-        self.response.out.write(answer)
+        user_text = self.request.get("text")
+
+        answer = encrypt(user_text, rot)
+
+        response = page_header + form.format(rot, cgi.escape(answer))
+        self.response.out.write(response)
 
 
 app = webapp2.WSGIApplication([
